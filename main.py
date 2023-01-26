@@ -104,11 +104,11 @@ def set_initial_voxel_size(args, df_name="point_cloud_dimensions.csv"):
     mean_pcld_n_points = np.mean(pcld_dimensions_df['n_points'])
 
     # Calculate the voxel size based on the mean point cloud volume and the ratio
-    if mean_pcld_n_points > args.voxel_max:
+    if mean_pcld_n_points > args.k:
         voxel_size = (mean_pcld_volume / voxel_size_2_pcld_ratio) ** (1 / 3)
     else:
         print(
-            f"No voxel size is needed. The average point cloud has less points than the voxel_max. {mean_pcld_n_points} < {args.voxel_max}")
+            f"No voxel size is needed. The average point cloud has less points than k. {mean_pcld_n_points} < {args.k}")
         voxel_size = None
 
     # return the voxel size
@@ -119,7 +119,7 @@ def hyper_param_tune_voxel_size(args, voxel_size, df_name="voxelized_point_cloud
     """
     Find the optimal voxel size for the point clouds in the dataset.
     """
-    voxel_max = args.voxel_max
+    k_neighbors = args.k
 
     """
     Fill the dataframe with the dimensions of the voxel-downsampled and cropped point clouds.
@@ -150,7 +150,7 @@ def hyper_param_tune_voxel_size(args, voxel_size, df_name="voxelized_point_cloud
     # Iterate over the point clouds and calculate number of points and dimensions
 
     n_points_voxelized = 0
-    while n_points_voxelized < voxel_max and voxel_size is not None:
+    while n_points_voxelized < k_neighbors and voxel_size is not None:
 
         # Create a dataframe which holds the dimensions of the point clouds
         df = init_empty_pcld_dimension_df()
@@ -168,8 +168,7 @@ def hyper_param_tune_voxel_size(args, voxel_size, df_name="voxelized_point_cloud
             # Calculate the number of points
             coords, _, _ = crop_point_cloud(coords, None, None,
                                             voxel_size=voxel_size,
-                                            voxel_max=None,
-                                            neighborhood_sampling=args.neighborhood_sampling)
+                                            voxel_max=None)
 
             n_points = coords.shape[0]
 
@@ -198,9 +197,10 @@ def hyper_param_tune_voxel_size(args, voxel_size, df_name="voxelized_point_cloud
         # Calculate mean points per voxelized point cloud
         n_points_voxelized = np.mean(df['n_points'])
 
-        if n_points_voxelized < args.voxel_max:
+        if n_points_voxelized < k_neighbors:
             # Decrease the voxel size by 10% until the voxelized point cloud size is greater than the voxel max
-            print(f"Voxel size was too large, meaning the average number of points per voxel downsampled point cloud is less than {voxel_max} ({n_points_voxelized}).")
+            print(
+                f"Voxel size was too large, meaning the average number of points per voxel downsampled point cloud is less than {k_neighbors} ({n_points_voxelized}).")
             print(" Decreasing voxel size by 10%. New voxel size: ", voxel_size * 0.9)
             voxel_size *= 0.9
 
@@ -260,8 +260,7 @@ def hyper_param_tune_query_ball_radius(args, voxel_size, df_name="voxelized_crop
         # Calculate the number of points
         coords, _, _ = crop_point_cloud(coords, None, None,
                                         voxel_size=voxel_size,
-                                        voxel_max=args.voxel_max,
-                                        neighborhood_sampling=args.neighborhood_sampling)
+                                        voxel_max=args.k)
 
         n_points = coords.shape[0]
 
@@ -375,7 +374,7 @@ if __name__ == '__main__':
         'Automatic hyper-parameter tuning of voxel size and query ball radius for a 3D point cloud dataset')
     parser.add_argument('--data_root', type=str, required=False,
                         help='data root (expects a folder of .npy files with point clouds)',
-                        default="/home/ambolt/data/semantic-kitti/dataset")
+                        default="examples/s3dis/")
     parser.add_argument('--coord_cols', nargs='+', type=int,
                         help='columns of the coordinates in the point clouds (x, y, z)',
                         default=[0, 1, 2])
@@ -398,9 +397,8 @@ if __name__ == '__main__':
     and the settings of the PointNeXt paper.
     """
     voxel_size = set_initial_voxel_size(args)
-    print(f"Inital voxel size: {voxel_size}")
+    print(f"Initial voxel size: {round(voxel_size, 4) if voxel_size < 1 else round(voxel_size, 1)}")
     voxel_size = hyper_param_tune_voxel_size(args, voxel_size)
-    print(f"Voxel size: {voxel_size}")
 
     """
     Calculate the query ball radius based on the mean volume of voxel-downsampled and cropped point clouds and the
@@ -409,4 +407,7 @@ if __name__ == '__main__':
     and the settings of the PointNeXt paper.
     """
     query_ball_radius = hyper_param_tune_query_ball_radius(args, voxel_size)
-    print(f"Query ball radius: {query_ball_radius}")
+    print()
+    print(f"Final Voxel size: {round(voxel_size, 4) if voxel_size < 1 else round(voxel_size, 1)}")
+    print(
+        f"Final Query ball radius: {round(query_ball_radius, 4) if query_ball_radius < 1 else round(query_ball_radius, 1)}")
