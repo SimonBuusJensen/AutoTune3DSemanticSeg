@@ -1,8 +1,45 @@
 # Automatic Hyperparmeter Tuning for Semantic Segmentation of 3D Point Clouds
-This repository contains code for automatically finding appropriate hyper-parameters for 3D semantic segmentation of 3D Point Clouds.
+# Introduction:
+Welcome to the 3D Point Cloud Analyzer! This tool allows you to analyze 3D point clouds stored in .npy files. Below is a quick usage guide to get you started with the tool.
+This repository contains code for automatically finding appropriate hyper-parameters for 3D semantic segmentation models suchs as:
+- [PointNet++](https://github.com/charlesq34/pointnet2)
+- [RandLa-Net](https://github.com/QingyongHu/RandLA-Net) 
+- [PointNeXt](https://github.com/guochengqian/PointNeXt)
 
-Dataset specific Hyperparameters:
+Dataset specific Hyperparameters which will be outputted by the analyzer:
 - Voxel size (for voxel downsampling)
 - Query ball radius (for locating neighbouring points)
 
+# How to use:
 
+## Setup:
+Before you start, make sure you have a compatible version of Python installed on your system. This project has been tested on Python 3.8.
+
+then, clone the repository using the following command:
+
+```
+git clone git@github.com:SimonBuusJensen/AutoTune3DSemanticSeg.git 
+cd AutoTune3DSemanticSeg
+```
+
+## Usage:
+To analyze the point clouds, you need to run the main.py script from the command line with the following command:
+
+``` 
+python main.py --data_root [DIR_WITH_NPY_FILES]
+```
+
+Here, [DIR_WITH_NPY_FILES] is the directory containing your .npy files. You need to replace [DIR_WITH_NPY_FILES] with the path to your directory.
+
+## Testing
+The repository includes an examples/s3dis directory with example .npy files that you can use for testing.
+
+To run the analyzer on these example files, you can use the following command:
+``` 
+python main.py --data_root examples/s3dis
+```
+
+We hope you find this 3D point cloud analysis tool useful. If you encounter any problems or have any suggestions for improvements, please open an issue on GitHub. Enjoy analyzing your point clouds!
+
+# License:
+Our code is released under MIT License (see LICENSE file for details).
