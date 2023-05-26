@@ -22,6 +22,11 @@ git clone git@github.com:SimonBuusJensen/AutoTune3DSemanticSeg.git
 cd AutoTune3DSemanticSeg
 ```
 
+Install python dependencies:
+```
+pip install -r requirements.txt
+```
+
 ## Usage:
 To analyze the point clouds, you need to run the main.py script from the command line with the following command:
 
