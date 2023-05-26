@@ -31,6 +31,14 @@ python main.py --data_root [DIR_WITH_NPY_FILES]
 
 Here, [DIR_WITH_NPY_FILES] is the directory containing your .npy files. You need to replace [DIR_WITH_NPY_FILES] with the path to your directory.
 
+### Required format of point clouds:
+The point cloud data should be stored in .npy files (NumPy array files). Each file represents a 3D point cloud with points stored as rows in a 2-dimensional array. The x-, y-, and z-coordinates of the points are expected to be in column 0, 1, and 2 respectively.
+However, this can be changed using the --coord_cols option
+
+```
+python main.py --data_root [DIR_WITH_NPY_FILES] --coord_cols 2 3 4  # x: in column 2, y: in column 3, z: in column 4 
+```
+
 ## Testing
 The repository includes an examples/s3dis directory with example .npy files that you can use for testing.
 
