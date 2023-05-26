@@ -28,7 +28,7 @@ pip install -r requirements.txt
 ```
 
 ## Usage:
-To analyze the point clouds, you need to run the main.py script from the command line with the following command:
+To analyze the point clouds and get appropriate hyper-parameters, you need to run the main.py script from the command line with the following command:
 
 ``` 
 python main.py --data_root [DIR_WITH_NPY_FILES]
